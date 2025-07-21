@@ -1,0 +1,219 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Salary Disparity Dashboard</title>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="~/css/dashboard.css" asp-append-version="true" />
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    @await RenderSectionAsync("Head", required: false)
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar Toggle Button -->
+        <button class="sidebar-toggle" id="sidebarToggle">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+
+        <!-- Analytics Sidebar -->
+        <div class="analytics-sidebar" id="analyticsSidebar">
+            <div class="sidebar-header">
+                <h3><i class="fas fa-lightbulb"></i> Data Insights</h3>
+                <button class="close-sidebar" id="closeSidebar">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="sidebar-content">
+                <div class="insight-card">
+                    <h4><i class="fas fa-chart-pie"></i> Overall Metrics</h4>
+                    <div class="metric" id="avgSalaryMetric">
+                        <div class="metric-loader"></div>
+                    </div>
+                    <div class="metric" id="genderGapMetric">
+                        <div class="metric-loader"></div>
+                    </div>
+                    <div class="metric" id="experienceImpactMetric">
+                        <div class="metric-loader"></div>
+                    </div>
+                </div>
+
+                <div class="insight-card">
+                    <h4><i class="fas fa-industry"></i> By Industry</h4>
+                    <div class="industry-comparison" id="industryComparison">
+                        <div class="metric-loader"></div>
+                    </div>
+                </div>
+
+                <div class="insight-card">
+                    <h4><i class="fas fa-graduation-cap"></i> Education Impact</h4>
+                    <div class="education-impact" id="educationImpact">
+                        <div class="metric-loader"></div>
+                    </div>
+                </div>
+
+                <div class="insight-card">
+                    <h4><i class="fas fa-map-marker-alt"></i> Regional Analysis</h4>
+                    <div class="regional-analysis" id="regionalAnalysis">
+                        <div class="metric-loader"></div>
+                    </div>
+                </div>
+
+                <div class="insight-card">
+                    <h4><i class="fas fa-bullhorn"></i> Key Findings</h4>
+                    <ul class="findings-list" id="keyFindings">
+                        <li>Calculating insights...</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <header class="header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>Salary Disparity Dashboard</h1>
+                    <p>Analyzing wage gaps across industries and demographics</p>
+                </div>
+            </div>
+
+            <partial name="_LoginPartial" />
+        </header>
+
+        <main role="main">
+            @RenderBody()
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script>
+        // Sidebar toggle functionality
+        $(document).ready(function () {
+            const sidebar = $('#analyticsSidebar');
+            const sidebarToggle = $('#sidebarToggle');
+            const closeSidebar = $('#closeSidebar');
+
+            // Toggle sidebar
+            sidebarToggle.click(function () {
+                sidebar.toggleClass('active');
+                sidebarToggle.toggleClass('active');
+                localStorage.setItem('sidebarState', sidebar.hasClass('active') ? 'open' : 'closed');
+            });
+
+            // Close sidebar
+            closeSidebar.click(function () {
+                sidebar.removeClass('active');
+                sidebarToggle.removeClass('active');
+                localStorage.setItem('sidebarState', 'closed');
+            });
+
+            // Load saved state
+            if (localStorage.getItem('sidebarState') === 'open') {
+                sidebar.addClass('active');
+                sidebarToggle.addClass('active');
+            }
+
+            // Load analytics data
+            loadAnalyticsData();
+        });
+
+        function loadAnalyticsData() {
+            $.get('/SalaryDisparityRecords/GetAnalyticsData', function (data) {
+                // Update metrics
+                $('#avgSalaryMetric').html(`
+                            <div class="metric-value">R${data.averageSalary.toLocaleString()}</div>
+                            <div class="metric-label">Average Salary</div>
+                        `);
+
+                $('#genderGapMetric').html(`
+                            <div class="metric-value">${data.genderGapPercentage}%</div>
+                            <div class="metric-label">Gender Pay Gap</div>
+                            <div class="metric-note">${data.genderGapNote}</div>
+                        `);
+
+                $('#experienceImpactMetric').html(`
+                            <div class="metric-value">R${data.experienceValue.toLocaleString()}</div>
+                            <div class="metric-label">Annual Experience Value</div>
+                            <div class="metric-note">Each year of experience adds ~${data.experienceValuePerYear}%</div>
+                        `);
+
+                // Industry comparison
+                let industryHtml = '<div class="industry-bars">';
+                data.industryComparison.forEach(industry => {
+                    industryHtml += `
+                                <div class="industry-bar">
+                                    <div class="industry-name">${industry.industry}</div>
+                                    <div class="bar-container">
+                                                        <div class="bar" style="width: ${industry.percentage}%; background: ${industry.gap > 0 ? '#10b981' : '#ef4444'};">
+                                            <span class="bar-value">R${industry.avgSalary.toLocaleString()}</span>
+                                        </div>
+                                    </div>
+                                    <div class="industry-gap ${industry.gap > 0 ? 'negative' : 'positive'}">
+                                        ${industry.gap > 0 ? '+' : ''}${industry.gap}%
+                                    </div>
+                                </div>
+                            `;
+                });
+                industryHtml += '</div>';
+                $('#industryComparison').html(industryHtml);
+
+                // Education impact
+                let educationHtml = '<div class="education-levels">';
+                data.educationImpact.forEach(edu => {
+                    educationHtml += `
+                                <div class="education-level">
+                                    <div class="edu-name">${edu.level}</div>
+                                    <div class="edu-salary">R${edu.avgSalary.toLocaleString()}</div>
+                                    <div class="edu-premium">+${edu.premium}%</div>
+                                </div>
+                            `;
+                });
+                educationHtml += '</div>';
+                $('#educationImpact').html(educationHtml);
+
+                // Regional analysis
+                let regionalHtml = '<div class="region-cards">';
+                data.regionalAnalysis.forEach(region => {
+                    regionalHtml += `
+                                <div class="region-card">
+                                    <div class="region-name">${region.location}</div>
+                                    <div class="region-salary">R${region.avgSalary.toLocaleString()}</div>
+                                    <div class="region-variation ${region.variation > 0 ? 'positive' : 'negative'}">
+                                        ${region.variation > 0 ? '+' : ''}${region.variation}%
+                                    </div>
+                                </div>
+                            `;
+                });
+                regionalHtml += '</div>';
+                $('#regionalAnalysis').html(regionalHtml);
+
+                // Key findings
+                let findingsHtml = '';
+                data.keyFindings.forEach(finding => {
+                    findingsHtml += `<li><i class="fas fa-${finding.icon}"></i> ${finding.text}</li>`;
+                });
+                $('#keyFindings').html(findingsHtml);
+            });
+        }
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,25 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+@if (SignInManager.IsSignedIn(User))
+{
+    <div class="user-profile">
+        <div class="avatar">
+            @User.Identity?.Name?[0].ToString().ToUpper()
+        </div>
+        <div>
+            <div>@User.Identity?.Name</div>
+            <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home")" class="d-inline">
+                <button type="submit" class="btn btn-link p-0" style="color: var(--gray); font-size: 13px;">Logout</button>
+            </form>
+        </div>
+    </div>
+}
+else
+{
+    <div class="user-actions">
+        <a class="btn btn-outline me-2" asp-area="Identity" asp-page="/Account/Register">Register</a>
+        <a class="btn btn-primary" asp-area="Identity" asp-page="/Account/Login">Login</a>
+    </div>
+}

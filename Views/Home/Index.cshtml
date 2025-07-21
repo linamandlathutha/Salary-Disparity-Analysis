@@ -1,0 +1,59 @@
+﻿
+
+<style>
+:root {
+  /* Color Palette */
+  --color-primary: #1F3A93;
+  --color-secondary: #1ABC9C;
+  --color-accent: #F39C12;
+  --color-bg: #F4F4F4;
+  --color-surface: #FFFFFF;
+  --color-text: #2E2E2E;
+  --color-muted: #6B7280;
+
+  /* Typography */
+  --font-family-sans: 'Roboto', 'Segoe UI', 'Open Sans', sans-serif;
+  --font-size-base: 16px;
+
+  /* Spacing */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 2rem;
+
+  /* Border Radius & Transition */
+  --radius: 0.5rem;
+  --transition: 0.3s ease;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; transition: all var(--transition); }
+html { font-size: var(--font-size-base); scroll-behavior: smooth; }
+body { font-family: var(--font-family-sans); background-color: var(--color-bg); color: var(--color-text); display: grid; grid-template-rows: auto 1fr auto; min-height: 100vh; }
+header { background-color: var(--color-primary); color: var(--color-surface); padding: var(--space-md); display: flex; align-items: center; justify-content: space-between; }
+.header-title { font-size: 1.25rem; font-weight: 600; }
+.nav-links a { color: var(--color-surface); text-decoration: none; margin-left: var(--space-md); font-weight: 500; }
+.nav-links a:hover { color: var(--color-accent); }
+.sidebar { position: fixed; top: 0; left: 0; height: 100vh; width: 250px; background-color: var(--color-surface); box-shadow: 2px 0 8px rgba(0,0,0,0.1); transform: translateX(-260px); transition: transform var(--transition); z-index: 100; padding-top: calc(var(--space-lg) + var(--space-md)); }
+.sidebar.open { transform: translateX(0); }
+.sidebar nav ul { list-style: none; }
+.sidebar nav li { margin: var(--space-sm) 0; }
+.sidebar nav a { display: block; padding: var(--space-sm) var(--space-md); color: var(--color-text); text-decoration: none; border-radius: var(--radius); }
+.sidebar nav a:hover { background-color: var(--color-bg); }
+.sidebar-toggle { position: fixed; top: var(--space-md); left: var(--space-md); background: var(--color-primary); color: var(--color-surface); border: none; padding: var(--space-sm) var(--space-md); border-radius: var(--radius); cursor: pointer; z-index: 200; }
+.sidebar-toggle svg { width: 1.5rem; height: 1.5rem; }
+.main-content { margin-left: 0; padding: var(--space-lg) var(--space-md); transition: margin-left var(--transition); }
+.main-content.shifted { margin-left: 250px; }
+.container { max-width: 1200px; margin: 0 auto; }
+</style>
+
+
+
+<main class="main-content" id="mainContent">
+  <div class="container">
+    <!-- Example Landing Content -->
+    <div class="card">
+      <h2>Welcome to Salary Disparity Analysis</h2>
+      <p>Explore insights on pay gaps across industries, locations, and genders.</p>
+      <a href="/Dashboard" class="btn">Go to Dashboard</a>
+    </div>
+  </div>
+</main>
