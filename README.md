@@ -1,6 +1,6 @@
 # Salary Disparity Analysis
 
-The salary disparcity application is a data analysis sample project that deduced the salary disparcity of a sample of employees across the world to comprare which sectors in the work environment are mostly paid the most depending on the qualifications and the experience.
+The salary disparity application is a data analysis sample project that deduced the salary disparity of a sample of employees across the world to comprare which sectors in the work environment are mostly paid the most depending on the qualifications and the experience.
 
 Tech Stack used
 -SQL database for data storing and data retrieval.
